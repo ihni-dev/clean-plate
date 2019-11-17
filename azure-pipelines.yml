@@ -26,5 +26,6 @@ steps:
 
   - script: |
       dotnet tool install GitVersion.Tool --tool-path .
+      ls -als
       dotnet-gitversion /output buildserver
     displayName: Set Version
