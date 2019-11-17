@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
+		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -25,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanPlate.SharedKernel", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web API", "Web API", "{3C4072BD-3E6E-4470-883C-1979720DC3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanPlate.WebAPI", "src\Adapters\Driving\CleanPlate.WebAPI\CleanPlate.WebAPI.csproj", "{3493A4E8-B94A-4086-A9DB-08A189100D23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanPlate.WebAPI", "src\Adapters\Driving\CleanPlate.WebAPI\CleanPlate.WebAPI.csproj", "{3493A4E8-B94A-4086-A9DB-08A189100D23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
