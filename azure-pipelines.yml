@@ -25,6 +25,6 @@ steps:
       version: '3.0.x'
 
   - script: |
-      dotnet tool install GitVersion.Tool --version 5.0.1 --tool-path .
+      dotnet tool install GitVersion.Tool --tool-path .
       dotnet-gitversion /output buildserver
     displayName: Set Version
