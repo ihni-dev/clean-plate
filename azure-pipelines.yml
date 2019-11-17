@@ -24,7 +24,12 @@ steps:
     inputs:
       version: '3.0.x'
 
-  - script: |
-      dotnet tool install GitVersion.Tool --tool-path .
-      ./dotnet-gitversion /output buildserver
+  - task: DotNetCoreCLI@2
+    displayName: 'Install GitVersion'
+    inputs:
+      command: custom
+      custom: tool
+      arguments: 'install GitVersion.Tool --tool-path .'
+
+  - script: ./dotnet-gitversion /output buildserver
     displayName: Set Version
