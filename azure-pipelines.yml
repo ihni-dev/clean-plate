@@ -74,7 +74,7 @@ jobs:
         containerRegistry: $(containerRegistryServiceConnection)
         repository: $(imageRepository)
         tags: |
-          version
+          $(version)
           latest
 
     - task: Docker@2
@@ -84,5 +84,5 @@ jobs:
         containerRegistry: $(containerRegistryServiceConnection)
         repository: $(imageRepository)
         tags: |
-          version
+          $(version)
           latest
