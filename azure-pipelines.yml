@@ -16,6 +16,10 @@ trigger:
     include:
     - src/*
 
+variables:
+  containerRegistryServiceConnection: 'Docker Hub'
+  imageRepository: ihni/clean-plate
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -46,3 +50,18 @@ steps:
       command: build
       projects: '**/*.csproj'
       arguments: '--configuration Release'
+
+  - task: Docker@2
+    inputs:
+      command: build
+      Dockerfile: '**/Dockerfile'
+      containerRegistry: $(containerRegistryServiceConnection)
+      repository: $(imageRepository)
+      tags: $(GitVersion.SemVer)
+
+  - task: Docker@2
+    inputs: 
+      command: push
+      containerRegistry: $(containerRegistryServiceConnection)
+      repository: $(imageRepository)
+      tags: $(GitVersion.SemVer)
