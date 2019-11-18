@@ -25,6 +25,7 @@ pool:
 
 steps:
   - task: UseDotNet@2
+    displayName: 'Use .NET Core 3.0'
     inputs:
       version: '3.0.x'
 
@@ -35,23 +36,24 @@ steps:
       custom: tool
       arguments: 'install GitVersion.Tool --tool-path .'
 
-  - script: ./dotnet-gitversion /output buildserver
-    displayName: Set Version
+  - script: ./dotnet-gitversion /output buildserver /nofetch
+    displayName: 'Set Version'
 
   - task: DotNetCoreCLI@2
-    displayName: Restore
+    displayName: 'Restore'
     inputs:
       command: restore
       projects: '**/*.csproj'
       
   - task: DotNetCoreCLI@2
-    displayName: Build
+    displayName: 'Build'
     inputs:
       command: build
       projects: '**/*.csproj'
       arguments: '--configuration Release'
 
   - task: Docker@2
+    displayName: 'Build docker image'
     inputs:
       command: build
       Dockerfile: '**/Dockerfile'
@@ -60,6 +62,7 @@ steps:
       tags: $(GitVersion.SemVer)
 
   - task: Docker@2
+    displayName: 'Push docker image'
     inputs: 
       command: push
       containerRegistry: $(containerRegistryServiceConnection)
