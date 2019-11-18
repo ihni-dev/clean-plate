@@ -73,4 +73,6 @@ jobs:
         command: push
         containerRegistry: $(containerRegistryServiceConnection)
         repository: $(imageRepository)
-        tags: $(GitVersion.SemVer)
+        tags: |
+          $(GitVersion.SemVer)
+          latest
