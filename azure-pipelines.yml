@@ -73,7 +73,9 @@ jobs:
         Dockerfile: '**/Dockerfile'
         containerRegistry: $(containerRegistryServiceConnection)
         repository: $(imageRepository)
-        tags: $(GitVersion.SemVer)
+        tags: |
+          version
+          latest
 
     - task: Docker@2
       displayName: 'Push docker image'
