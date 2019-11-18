@@ -56,7 +56,7 @@ jobs:
 
 - job: 'Docker'
   dependsOn: 'NET'
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
   steps:
     - task: Docker@2
       displayName: 'Build docker image'
