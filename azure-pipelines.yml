@@ -18,6 +18,7 @@ variables:
   dockerRepository: 'clean-plate'
   fullDockerRepositoryPath: ihni/clean-plate
   appName: 'clean-plate'
+  buildConfiguration: 'Release'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -60,7 +61,13 @@ stages:
         inputs:
           command: build
           projects: '**/*.csproj'
-          arguments: '--configuration Release'
+          arguments: '--configuration $(buildConfiguration)'
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: test
+          projects: '**/*Tests/*.csproj'
+          arguments: '--configuration $(buildConfiguration)'
 
   - job: Docker
     displayName: 'Docker'
