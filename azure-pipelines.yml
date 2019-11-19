@@ -96,7 +96,7 @@ stages:
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
   jobs:
     - deployment: deploy
-      displayName: 'Deploy to Azure'
+      displayName: 'Azure App Service'
       environment: 'clean-plate'
       strategy:
         runOnce:
