@@ -7,7 +7,7 @@
     <DockerfileContext>..\..\..\..</DockerfileContext>
   </PropertyGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.1.2">
