@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
   branches:
     include:
@@ -79,6 +74,7 @@ jobs:
 
     - task: Docker@2
       displayName: 'Push docker image'
+      condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
       inputs: 
         command: push
         containerRegistry: $(containerRegistryServiceConnection)
