@@ -95,6 +95,7 @@ stages:
   jobs:
     - deployment: deploy
       displayName: Deploy to Azure App Service
+      environment: 'clean-plate'
       strategy:
         runOnce:
           deploy:
