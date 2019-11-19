@@ -68,13 +68,7 @@ stages:
         inputs:
           command: test
           projects: '**/*Tests/*.csproj'
-          arguments: '--configuration $(buildConfiguration) --logger trx --collect "Code coverage"'
-
-      - task: PublishTestResults@2
-        displayName: 'Publish test results'
-        inputs:
-          testRunner: VSTest
-          testResultsFiles: '**/*.trx'
+          arguments: '--configuration $(buildConfiguration)'
 
   - job: Docker
     displayName: 'Docker'
