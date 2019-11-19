@@ -26,6 +26,7 @@ stages:
 - stage: Build
   jobs:
   - job: NET
+    displayName: '.NET'
     steps:
       - task: UseDotNet@2
         displayName: 'Use .NET Core 3.0'
@@ -61,9 +62,10 @@ stages:
           projects: '**/*.csproj'
           arguments: '--configuration Release'
 
-  - job: Docker    
+  - job: Docker
+    displayName: 'Docker'
     variables:
-      version: $[ dependencies.NET.outputs['outputVersion.Version'] ]
+      version: $[dependencies.NET.outputs['outputVersion.Version']]
     dependsOn: NET
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
     steps:
@@ -94,7 +96,7 @@ stages:
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
   jobs:
     - deployment: deploy
-      displayName: Deploy to Azure App Service
+      displayName: 'Deploy to Azure'
       environment: 'clean-plate'
       strategy:
         runOnce:
