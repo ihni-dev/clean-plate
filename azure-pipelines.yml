@@ -64,15 +64,12 @@ stages:
           arguments: '--configuration $(buildConfiguration)'
 
       - task: DotNetCoreCLI@2
-        displayName: 'Test'
+        displayName: 'Run tests'
         inputs:
           command: test
           projects: '**/*Tests/*.csproj'
-          arguments: --no-build --no-restore --configuration $(buildConfiguration)  --logger "trx;LogFileName=testresults.trx" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=TestResults/Coverage/
-
-      - script: dotnet reportgenerator "-reports:$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml" "-targetDir:$(Build.SourcesDirectory)/TestResults/Coverage/Reports" -tag:$(Build.BuildNumber) -reportTypes:htmlInline
-        displayName: 'Generate tests report'
-        workingDirectory: $(Build.SourcesDirectory)/BuildApp.Web.Tests
+          arguments: --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
+          nobuild: true
 
       - task: PublishTestResults@2
         displayName: 'Publish tests results'
@@ -80,14 +77,22 @@ stages:
           testRunner: VSTest
           testResultsFiles: '**/*.trx'
           failTaskOnFailedTests: true
-
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish code coverage results'
+          
+      - task: DotNetCoreCLI@2
+        displayName: Install ReportGenerator tool
         inputs:
-          codeCoverageTool: 'cobertura'
-          summaryFileLocation: $(Build.SourcesDirectory)/TestResults/Coverage/**/coverage.cobertura.xml
-          reportDirectory: $(Build.SourcesDirectory)/TestResults/Coverage/Reports
-          failIfCoverageEmpty: false 
+          command: custom
+          custom: tool
+          arguments: install --tool-path . dotnet-reportgenerator-globaltool
+        
+      - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:HtmlInline_AzurePipelines;Cobertura
+        displayName: Create reports
+        
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish code coverage'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
 
   - job: Docker
     displayName: 'Docker'
