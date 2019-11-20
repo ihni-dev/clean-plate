@@ -85,7 +85,7 @@ stages:
           custom: tool
           arguments: install --tool-path . dotnet-reportgenerator-globaltool
         
-      - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:HtmlInline_AzurePipelines;Cobertura
+      - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -tag:$(Build.BuildNumber) -reporttypes:HtmlInline_AzurePipelines;Cobertura
         displayName: Create reports
         
       - task: PublishCodeCoverageResults@1
