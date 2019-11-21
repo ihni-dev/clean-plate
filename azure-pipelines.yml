@@ -11,92 +11,113 @@ trigger:
     include:
     - src/*
 
+pool:
+  vmImage: ubuntu-latest
+
 variables:
-  azureSubscriptionServiceConnection: 'Azure Subscription'
+  buildConfiguration: 'Release'
+  disable.coverage.autogenerate: true
   containerRegistryServiceConnection: 'Docker Hub'
+  fullDockerRepositoryPath: 'ihni/clean-plate'
+  azureSubscriptionServiceConnection: 'Azure Subscription'
   dockerNamespace: 'ihni'
   dockerRepository: 'clean-plate'
-  fullDockerRepositoryPath: ihni/clean-plate
   appName: 'clean-plate'
-  buildConfiguration: 'Release'
-
-pool:
-  vmImage: 'ubuntu-latest'
 
 stages:
 - stage: Build
   jobs:
   - job: NET
-    displayName: '.NET'
+    displayName: .NET
     steps:
       - task: UseDotNet@2
-        displayName: 'Use .NET Core 3.0'
+        displayName: Use .NET Core 3.0
         inputs:
-          version: '3.0.x'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Install GitVersion'
-        inputs:
-          command: custom
-          custom: tool
-          arguments: 'install GitVersion.Tool --tool-path .'
-
-      - script: ./dotnet-gitversion /output buildserver /nofetch
-        displayName: 'Set build version'
-
-      - bash: |
-            version=$(GitVersion.SemVer)
-            echo "##vso[task.setvariable variable=version;isOutput=true]$version"
-        name: outputVersion
-        displayName: 'Save build version'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Restore'
-        inputs:
-          command: restore
-          projects: '**/*.csproj'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Build'
-        inputs:
-          command: build
-          projects: '**/*.csproj'
-          arguments: '--configuration $(buildConfiguration)'
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Run tests'
-        inputs:
-          command: test
-          projects: '**/*Tests/*.csproj'
-          arguments: --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
-          nobuild: true
+          version: 3.0.x
 
       - task: DotNetCoreCLI@2
         displayName: Install ReportGenerator tool
         inputs:
           command: custom
           custom: tool
-          arguments: install --global dotnet-reportgenerator-globaltool
+          arguments: install dotnet-reportgenerator-globaltool --tool-path .
+
+      - task: DotNetCoreCLI@2
+        displayName: Install GitVersion
+        inputs:
+          command: custom
+          custom: tool
+          arguments: install GitVersion.Tool --tool-path .
+
+      - script: ./dotnet-gitversion /output buildserver /nofetch
+        displayName: Set build version
+
+      - script: |
+            version=$(GitVersion.SemVer)
+            echo "##vso[task.setvariable variable=version;isOutput=true]$version"
+        name: outputVersion
+        displayName: Save build version
+
+      - task: DotNetCoreCLI@2
+        displayName: Restore
+        inputs:
+          command: restore
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: '**/*.csproj'
+          arguments: --configuration $(buildConfiguration)
+          versioningScheme: byEnvVar
+          versionEnvVar: $(GitVersion.SemVer)
+
+      - task: DotNetCoreCLI@2
+        displayName: Run tests
+        inputs:
+          command: test
+          projects: '**/*Tests/*.csproj'
+          arguments: --configuration $(buildConfiguration) --logger "trx;LogFileName=$(version)-TestResults.trx" --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
+          nobuild: true
+          publishTestResults: false
+          majorVersion: $(GitVersion.Major)
+          minorVersion: $(GitVersion.Minor)
+          patchVersion: $(GitVersion.Patch)
         
-      - script: reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -tag:$(Build.BuildNumber) -reporttypes:Cobertura
+      - script: |
+          ./reportgenerator "-reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml" \
+                            "-targetdir:$(Build.SourcesDirectory)/coverlet/reports" \
+                            "-reporttypes:Cobertura;HtmlInline_AzurePipelines_Dark" \
+                            "-tag:$(GitVersion.SemVer)" \
+                            "-filefilters:-*GitVersionInformation*" \
+                            "-assemblyfilters:-*Tests*"
         displayName: Create reports
 
+      - task: PublishTestResults@2
+        displayName: "Publish test results"
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: $(Build.SourcesDirectory)/**/*.trx
+          failTaskOnFailedTests: true
+          mergeTestResults: true
+
       - task: PublishCodeCoverageResults@1
-        displayName: 'Publish code coverage'
+        displayName: Publish code coverage
         inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
-          additionalCodeCoverageFiles: false
+          reportDirectory: $(Build.SourcesDirectory)/coverlet/reports
 
   - job: Docker
-    displayName: 'Docker'
+    displayName: Docker
+    dependsOn: NET
     variables:
       version: $[dependencies.NET.outputs['outputVersion.Version']]
-    dependsOn: NET
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
     steps:
       - task: Docker@2
-        displayName: 'Build docker image'
+        displayName: Build docker image
         inputs:
           command: build
           Dockerfile: '**/Dockerfile'
@@ -107,7 +128,7 @@ stages:
             latest
 
       - task: Docker@2
-        displayName: 'Push docker image'
+        displayName: Push docker image
         condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
         inputs: 
           command: push
@@ -122,17 +143,18 @@ stages:
   condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
   jobs:
     - deployment: deploy
-      displayName: 'Azure App Service'
-      environment: 'clean-plate'
+      displayName: Azure App Service
+      environment: clean-plate
       strategy:
         runOnce:
           deploy:
             steps:
             - task: AzureRmWebAppDeployment@4
-              displayName: 'Deploy to Azure App Service'
+              displayName: Deploy to Azure App Service
               inputs:
-                azureSubscription: '$(azureSubscriptionServiceConnection)'
+                ConnectionType: 'AzureRM'
+                azureSubscription: $(azureSubscriptionServiceConnection)
                 appType: webAppContainer
-                WebAppName: '$(appName)'
-                DockerNamespace: '$(dockerNamespace)'
-                DockerRepository: '$(dockerRepository)'
+                WebAppName: $(appName)
+                DockerNamespace: $(dockerNamespace)
+                DockerRepository: $(dockerRepository)
