@@ -86,6 +86,7 @@ stages:
         inputs:
           codeCoverageTool: Cobertura
           summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
+          additionalCodeCoverageFiles: false
 
   - job: Docker
     displayName: 'Docker'
