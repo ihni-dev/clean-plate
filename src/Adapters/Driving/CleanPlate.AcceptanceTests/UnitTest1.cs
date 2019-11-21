@@ -1,4 +1,6 @@
+using CleanPlate.WebAPI.Controllers;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace CleanPlate.AcceptanceTests
@@ -8,7 +10,10 @@ namespace CleanPlate.AcceptanceTests
         [Fact]
         public void Test1()
         {
-            Assert.True(true);
+            var controller = new WeatherForecastController();
+            var result = controller.Get();
+
+            Assert.Equal(5, result.Count());
         }
     }
 }
