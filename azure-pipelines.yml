@@ -77,8 +77,8 @@ stages:
         displayName: Run tests
         inputs:
           command: test
-          projects: '**/*Tests/*.csproj'
-          arguments: --configuration $(buildConfiguration) --logger "trx;LogFileName=$(version)-TestResults.trx" --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
+          projects: 'tests/*Tests/*.csproj'
+          arguments: --configuration $(buildConfiguration) --logger "trx;LogFileName=$(GitVersion.SemVer)-TestResults.trx" --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
           nobuild: true
           publishTestResults: false
           majorVersion: $(GitVersion.Major)
@@ -86,11 +86,10 @@ stages:
           patchVersion: $(GitVersion.Patch)
         
       - script: |
-          ./reportgenerator "-reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml" \
-                            "-targetdir:$(Build.SourcesDirectory)/coverlet/reports" \
+          ./reportgenerator "-reports:tests/**/coverage.cobertura.xml" \
+                            "-targetdir:tests/coverlet/reports" \
                             "-reporttypes:Cobertura;HtmlInline_AzurePipelines_Dark" \
                             "-tag:$(GitVersion.SemVer)" \
-                            "-filefilters:-*GitVersionInformation*" \
                             "-assemblyfilters:-*Tests*"
         displayName: Create reports
 
@@ -98,7 +97,7 @@ stages:
         displayName: "Publish test results"
         inputs:
           testResultsFormat: VSTest
-          testResultsFiles: $(Build.SourcesDirectory)/**/*.trx
+          testResultsFiles: tests/**/*.trx
           failTaskOnFailedTests: true
           mergeTestResults: true
 
@@ -106,8 +105,8 @@ stages:
         displayName: Publish code coverage
         inputs:
           codeCoverageTool: Cobertura
-          summaryFileLocation: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
-          reportDirectory: $(Build.SourcesDirectory)/coverlet/reports
+          summaryFileLocation: tests/coverlet/reports/Cobertura.xml
+          reportDirectory: tests/coverlet/reports
 
   - job: Docker
     displayName: Docker
