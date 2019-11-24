@@ -91,6 +91,7 @@ stages:
                             "-targetdir:tests/coverlet/reports" \
                             "-reporttypes:Cobertura;HtmlInline_AzurePipelines_Dark" \
                             "-tag:$(GitVersion.SemVer)" \
+                            "-filefilters:-*GitVersionInformation*" \
                             "-assemblyfilters:-*Tests*"
         displayName: Create reports
 
