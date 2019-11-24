@@ -11,6 +11,18 @@ trigger:
     include:
     - src/*
     - tests/*
+    - azure-pipelines.yml
+  pr:
+    branches:
+      include:
+      - master
+      - develop
+      - release/*
+    paths:
+      include:
+      - src/*
+      - tests/*
+      - azure-pipelines.yml
 
 pool:
   vmImage: ubuntu-latest
