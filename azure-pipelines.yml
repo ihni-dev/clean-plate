@@ -78,7 +78,7 @@ stages:
         displayName: Run tests
         inputs:
           command: test
-          projects: 'tests/*Tests/*.csproj'
+          projects: 'tests/**/*Tests/*.csproj'
           arguments: --configuration $(buildConfiguration) --logger "trx;LogFileName=$(GitVersion.SemVer)-TestResults.trx" --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true
           nobuild: true
           publishTestResults: false
