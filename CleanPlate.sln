@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
+		Dockerfile = Dockerfile
 		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
 		README.md = README.md
@@ -42,7 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{C0C777B9-AE45-4984-9455-2AA62568B68A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanPlate.Unit.Tests", "tests\Unit\CleanPlate.Unit.Tests\CleanPlate.Unit.Tests.csproj", "{39AD326E-4BF0-4208-9F20-25165713A099}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanPlate.Unit.Tests", "tests\Unit\CleanPlate.Unit.Tests\CleanPlate.Unit.Tests.csproj", "{39AD326E-4BF0-4208-9F20-25165713A099}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanPlate.Api.Tests", "tests\Api\CleanPlate.Api.Tests\CleanPlate.Api.Tests.csproj", "{47FC87D9-1B9F-47FD-8912-82C999A70BDD}"
 EndProject
