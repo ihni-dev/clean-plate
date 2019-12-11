@@ -11,6 +11,19 @@ trigger:
     include:
     - src/*
     - tests/*
+    - azure-pipelines.yml
+
+pr:
+  branches:
+    include:
+    - master
+    - develop
+    - release/*
+  paths:
+    include:
+    - src/*
+    - tests/*
+    - azure-pipelines.yml
 
 pool:
   vmImage: ubuntu-latest
@@ -32,9 +45,9 @@ stages:
     displayName: .NET
     steps:
       - task: UseDotNet@2
-        displayName: Use .NET Core 3.0
+        displayName: Use .NET Core 3.1
         inputs:
-          version: 3.0.x
+          version: 3.1.x
 
       - task: DotNetCoreCLI@2
         displayName: Install ReportGenerator tool
@@ -85,7 +98,7 @@ stages:
           majorVersion: $(GitVersion.Major)
           minorVersion: $(GitVersion.Minor)
           patchVersion: $(GitVersion.Patch)
-        
+
       - script: |
           ./reportgenerator "-reports:tests/**/coverage.cobertura.xml" \
                             "-targetdir:tests/coverlet/reports" \
